@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+
+    <script>
+
+
+        console.log("everything work");
+
+        'use strict';
+        var fullObj;
+        //start point
+        if (false) {
+            tableOnClick(14);
+        }
+        else {
+
+            VK.init(function () {
+                // API initialization succeeded
+                // Your code here
+                console.log("Vk loaded");
+                let real_height = 4000;
+                VK.callMethod('resizeWindow', 1000, real_height);
+                tableOnClick(14);
+                //real_height = document.getElementById('page').clientHeight;
+                //VK.callMethod('resizeWindow', 1000, real_height);
+            }, function () {
+                // API initialization failed
+                // Can reload page here
+                tableOnClick(14);
+            }, '5.74');
+        }
+
+
+        function tableOnClick(idClub) {
+            //let url = 'http://fitnes-ptz.ru/mobile/widget.php';
+            //let url = 'https://webapp.tsdames.lt/index.php?url=http://fitnes-ptz.ru/mobile/widget.php';
+            let url2 = 'https://webapp.tsdames.lt/index.php?url=http://fitnes-ptz.ru/mobile/widget2.php'
+            fetch(url2)
+                .then((res) => {
+
+                    return res.json();
+                })
+                .then((out) => {
+                    fullObj = out;
+                    createTable(getClubs(out, idClub));
+
+
+                })
+                .catch(err => {
+                    throw err
+                });
+        }
+
+        function createTable(sortedArray) {
+            let tbBody = document.getElementById("tablebody");
+            let thisWeek = [];
+            /*thisWeek.push(sortedArray[0]);*/
+            for (let mainCounter = 1; mainCounter < sortedArray.length - 1; mainCounter++) {
+                thisWeek.push(sortedArray[mainCounter - 1]);
+                for (var i = mainCounter; i < sortedArray.length; i++) {
+                    mainCounter = i;
+                    if (sortedArray[i].time == sortedArray[i - 1].time) {
+                        thisWeek.push(sortedArray[i]);
+                        /*mainCounter=i;*/
+                    } else {
+                        break;
+                    }
+
+                }
+
+                let trNew = document.createElement("tr");
+                trNew.style.maxWidth = "1000px"
+                let text = "";
+                let thisDayCounter = 0;
+                for (let j = 0; j < 8; j++) {
+                    let td = document.createElement("td");
+
+                    if (j === 0) {
+                        let timeText = document.createElement("span");
+                        timeText.innerText = thisWeek[0].time;
+                        timeText.style.width = "8%";
+                        td.appendChild(timeText);
+                        td.style.width = "8%";
+                    } else {
+
+                        for (let k = 0; k < thisWeek.length; k++) {
+
+                            if (thisWeek[k].day == j) {
+                                if (thisDayCounter > 0) {
+                                    td.appendChild(document.createElement("hr"));
+                                }
+                                let classNameText = document.createElement("span");
+                                classNameText.innerText = thisWeek[k].class + " \n";
+                                td.appendChild(classNameText);
+
+                                let teamName = document.createElement("b");
+                                teamName.innerText = thisWeek[k].team + " ";
+                                td.style.width = "13%";
+                                td.appendChild(teamName);
+                                thisDayCounter++;
+                                continue;
+                            }
+
+                        }
+                    }
+                    thisDayCounter = 0;
+                    text = "";
+                    trNew.appendChild(td)
+                }
+                tbBody.appendChild(trNew);
+                thisWeek = [];
+            }
+
+
+        }
+
+        function buildTable(text, id, idClub) {
+            let activeList = document.getElementsByClassName("active");
+            activeList[0].classList.remove("active");
+            document.getElementById("title").innerText = text;
+            id.classList.add("active");
+            clearTable();
+            tableOnClick(idClub);
+
+        }
+
+
+        function clearTable() {
+            document.getElementById("tablebody").innerHTML = "";
+
+        }
+
+        var getClubs = function (jsonObj, idClub) {
+            let arrayOfClub = [], k = 0;
+            console.log("hello form getClubs  " + jsonObj.schedule.length);
+            for (let i = 0; i < jsonObj.schedule.length; i++) {
+                let currObj = jsonObj.schedule[i];
+                if (currObj.clubid == idClub) {
+                    arrayOfClub.push(currObj);
+                    k++;
+                }
+            }
+            console.log(arrayOfClub.sort(compare));
+            return arrayOfClub;
+        };
+
+        function compare(a, b) {
+            if (a.time < b.time)
+                return -1;
+            if (a.time > b.time)
+                return 1;
+            return 0;
+        }
+
+    </script>
+
+
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top" >
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Фитнесс Империя</a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active" id="communalinaia" onclick='buildTable("ул. Коммунальная, д.20 ",this,14)'><a
+                        href="#">Коммунальная</a>
+                </li>
+                <li id="promishlennaia" onclick='buildTable("ул. Промышленная, д. 10",this,15)'><a
+                        href="#">Промышленная</a>
+                </li>
+                <li id="lososinskoe" onclick='buildTable("Лососинское шоссе, д. 26 (ТЦ Столица)",this,16)' ><a href="#">Лососинское
+                    ш.</a></li>
+                <li id="kerliskiy" onclick='buildTable("пр. Карельский, д. 20",this,17)' ><a href="#">Карельский</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+
+    <!-- begin snippet: js hide: false -->
+
+    <!-- language: lang-css -->
+
+    <h3 style="text-align: center" id="title">ул. Коммунальная, д.20</h3>
+
+    <div class="container" id="page">
+        <div class="row">
+            <div class="table-responsive">
+                <table class="col-sm-12 table table-bordered table-striped table-condensed cf">
+                    <thead class="cf">
+                    <tr>
+                        <th>Время</th>
+                        <th>Понедельник</th>
+                        <th>Вторник</th>
+                        <th>Среда</th>
+                        <th>Четверг</th>
+                        <th>Пятница</th>
+                        <th>Суббота</th>
+                        <th>Воскресенье</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablebody">
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
