@@ -50,14 +50,13 @@ function tableOnClick(idClub) {
 function createTable(sortedArray) {
     let tbBody = document.getElementById("tablebody");
     let thisWeek = [];
-    /*thisWeek.push(sortedArray[0]);*/
-    for (let mainCounter = 1; mainCounter < sortedArray.length - 1; mainCounter++) {
+
+    for (let mainCounter = 1; mainCounter < sortedArray.length + 1; mainCounter++) {
         thisWeek.push(sortedArray[mainCounter - 1]);
-        for (var i = mainCounter; i < sortedArray.length; i++) {
+        for (let i = mainCounter; i < sortedArray.length; i++) {
             mainCounter = i;
             if (sortedArray[i].time == sortedArray[i - 1].time) {
                 thisWeek.push(sortedArray[i]);
-                /*mainCounter=i;*/
             } else {
                 break;
             }

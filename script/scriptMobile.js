@@ -44,7 +44,7 @@ function tableOnClick(idClub) {
 
 function getClassesFromClub(jsonObj, idClub) {
     let arrayOfClub = [];
-    console.log("hello form getClassesFromClub  " + jsonObj.schedule.length);
+    //console.log("hello form getClassesFromClub  " + jsonObj.schedule.length);
     for (let i = 0; i < jsonObj.schedule.length; i++) {
         let currObj = jsonObj.schedule[i];
         if (currObj.clubid == idClub) {
@@ -52,17 +52,17 @@ function getClassesFromClub(jsonObj, idClub) {
 
         }
     }
-    console.log(arrayOfClub.sort(compareByDay));
+    //console.log(arrayOfClub.sort(compareByDay));
     return arrayOfClub;
 }
 
-function compareByDay(a, b) {
+/*function compareByDay(a, b) {
     if (a.day < b.day)
         return -1;
     if (a.day > b.day)
         return 1;
     return 0;
-}
+}*/
 function compareByTime(a,b) {
     if (a.time < b.time)
         return -1;
@@ -84,22 +84,35 @@ function dayByDay(sortedArray) {
 
 function createTable(sortedArray) {
     let tbBody = document.getElementById("tablebody");
-    console.log("createTable");
+    console.log(sortedArray);
     let thisDay = [];
-    for (let i = 1; i < sortedArray.length - 1 ; i++) {
-        thisDay.push(sortedArray[i-1]);
-        for (let j = i;j<sortedArray.length;j++){
-            i = j;
-            if (sortedArray[j].day == sortedArray[j-1].day){
-                thisDay.push(sortedArray[j]);
+
+    for (let mainCounter = 1; mainCounter < sortedArray.length + 1; mainCounter++) {
+        thisDay.push(sortedArray[mainCounter-1]);
+
+        for (let i = mainCounter;i<sortedArray.length;i++){
+            /*mainCounter = i;
+            if (sortedArray[i].day == sortedArray[i-1].day){
+                thisDay.push(sortedArray[i]);
             } else {
                 break;
+            }*/
+
+            if (sortedArray[i].day != sortedArray[i-1].day){
+                mainCounter = i;
+                break;
             }
+            thisDay.push(sortedArray[i]);
+
         }
+        /*if (thisDay.length < 1) thisDay.push(sortedArray[mainCounter+1]);*/
+
+        /*console.log(" this day lenght = " + thisDay.length);
+        console.log(thisDay);*/
 
         thisDay.sort(compareByTime);
         for (let k =0;k<thisDay.length;k++) {
-            console.log(thisDay);
+            //console.log(thisDay);
             let trNew = document.createElement("tr");
 
             let tdDay = document.createElement("td");
